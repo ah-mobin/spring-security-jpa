@@ -10,4 +10,14 @@ public class HomeController {
     public String home(){
         return ("<h1>Welcome to spring boot application</h1>");
     }
+
+    @GetMapping("/user")
+    public String user(){
+        return ("<h1>Welcome to spring boot application user panel</h1>");
+    }
+
+    @GetMapping("/admin")
+    public String admin(){
+        return ("<h1>Welcome to spring boot application admin</h1>");
+    }
 }
