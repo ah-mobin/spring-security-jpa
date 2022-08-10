@@ -7,6 +7,7 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.core.userdetails.User;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.password.NoOpPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
@@ -15,7 +16,13 @@ import javax.sql.DataSource;
 @EnableWebSecurity
 public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 
-    @Autowired public DataSource dataSource;
+    @Autowired
+    DataSource dataSource;
+
+    @Autowired
+    UserDetailsService userDetailsService;
+
+
     /**
      * this method is concern about the user authentication
      */
@@ -23,8 +30,11 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
     protected void configure(AuthenticationManagerBuilder auth) throws Exception {
         // set configuration on the auth object
 
+        //use jpa - user details service authentication
+        jpaUserServiceAuthentication(auth);
+
         //use jdbc authentication
-        jdbcAuthentication(auth);
+        //jdbcAuthentication(auth);
 
         //use in memory authentication
         //inMemoryAuthentication(auth);
@@ -42,10 +52,17 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
                 .formLogin();
     }
 
+
     @Bean
     public PasswordEncoder getPasswordEncoder(){
         return NoOpPasswordEncoder.getInstance();
     }
+
+
+    private void jpaUserServiceAuthentication(AuthenticationManagerBuilder auth) throws Exception {
+        auth.userDetailsService(userDetailsService);
+    }
+
 
     private void jdbcAuthentication(AuthenticationManagerBuilder auth) throws Exception {
         auth.jdbcAuthentication()
